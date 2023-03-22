@@ -293,30 +293,46 @@
   </div>
   <script>
     $(document).ready(function () {
+      // Activate tooltip
+      $('[data-toggle="tooltip"]').tooltip();
+
+      fetchDocument(1, 20)
+    });
+      
       const url = 'https://docuplier.com/api/v1/documents';
+      const frontendUrl = 'https://decuplier.netlify.app'
       const getFullDate = (date) => {
         const d = new Date(date);
         return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}`
       };
       const populateDocument = x => `
-            <tr>
-              <td style="width: 15%;text-align: center;">${x.orgName}</td>
-              <td style="width: 15%;text-align: center;">${x.owner.email}</td>
-              <td style="width: 15%;text-align: center;">${x.clients.length}</td>
-              <td style="width: 15%;text-align: center;">${x.owner.name}</td>
-              <td style="width: 15%;text-align: center;">${x.product.name}</td>
-              <td style="width: 15%;text-align: center;"><a href="/organisation-document?doc=${x._id}" target="blank" class="page-link">Click Here</a></td>
-              <td style="width: 15%;text-align: center;">Freemium</td>
-              <td style="width: 15%;text-align: center;">${getFullDate(x.createdAt)}</td>
-              <td style="width: 15%;text-align: center;">
-                <a href="#ResendDocuments" class="send" data-toggle="modal"><i class="material-icons"
-                    data-toggle="tooltip" title="Resend Docs">&#xf0d2;</i></a>
-              </td>
-            </tr>
-          
-          `;
-      // Activate tooltip
-      $('[data-toggle="tooltip"]').tooltip();
+          <tr>
+            <td style="width: 15%;text-align: center;">${x.orgName}</td>
+            <td style="width: 15%;text-align: center;">${x.owner.email}</td>
+            <td style="width: 15%;text-align: center;">${x.clients.length}</td>
+            <td style="width: 15%;text-align: center;">${x.owner.name}</td>
+            <td style="width: 15%;text-align: center;">${x.product.name}</td>
+            <td style="width: 15%;text-align: center;"><a href="${frontendUrl}/organisation-document?doc=${x._id}" target="blank" class="page-link">Click Here</a></td>
+            <td style="width: 15%;text-align: center;">Freemium</td>
+            <td style="width: 15%;text-align: center;">${getFullDate(x.createdAt)}</td>
+            <td style="width: 15%;text-align: center;">
+              <a href="#ResendDocuments" class="send" data-toggle="modal"><i class="material-icons"
+                  data-toggle="tooltip" title="Resend Docs">&#xf0d2;</i></a>
+            </td>
+          </tr>
+        
+        `;
+      const toggleButton = (buttonId, shouldNotShow, clickEventHandler) => {
+        const element = $(`#${buttonId}`);
+        if (shouldNotShow) {
+          element.addClass('disabled').children().first().removeClass('page-link')
+          element.attr('style', "cursor:not-allowed;")
+        } else {
+          element.removeClass('disabled').children().first().addClass('page-link')
+          element.attr('style', "cursor:pointer;")
+          element.on('click', clickEventHandler)
+        }
+      }
       const fetchDocument = (page, perPage) => {
         fetch(`${url}?page=${page}&perPage=${perPage}`)
           .then(res => res.json())
@@ -325,23 +341,12 @@
               res.data.map(populateDocument).join('')
             )
 
-            $('#next').off("click");
-            $('#previous').off("click");
-            if (page == 1) {
-              $('#previous').addClass('disabled').children().first().removeClass('page-link')
-              $('#previous').attr('style', "cursor:not-allowed;")
-            } else {
-              $('#previous').removeClass('disabled').children().first().addClass('page-link')
-              $('#previous').attr('style', "cursor:pointer;")
-              $('#previous').on('click', () => fetchDocument(page - 1, perPage))
-            }
-            $('#next').on('click', () => fetchDocument(page + 1, perPage))
-          })
-
-      }
-
-      fetchDocument(1, 5)
-    });
+          $('#next').off("click");
+          $('#previous').off("click");
+          toggleButton('previous', (page == 1), () => fetchDocument(page - 1, perPage));
+          toggleButton('next', (res.data.length < perPage), () => fetchDocument(page + 1, perPage));
+        })
+    }
   </script>
 </body>
 
