@@ -282,7 +282,7 @@
           </tbody>
         </table>
         <div class="clearfix">
-          <div class="hint-text">Showing <b>50</b> out of <b>2500</b> entries</div>
+          <div class="hint-text">Showing <b>15</b> out of <b>200</b> entries</div>
           <ul class="pagination">
             <li class="page-item" id="previous"><a class="page-link">Previous</a></li>
             <li class="page-item" id="next" style="cursor:pointer;"><a class="page-link">Next</a></li>
@@ -308,9 +308,9 @@
       const populateDocument = x => `
           <tr>
             <td style="width: 15%;text-align: center;">${x.orgName}</td>
-            <td style="width: 15%;text-align: center;">${x.owner.email}</td>
+            <td style="width: 15%;text-align: center;">${x.owner?.email || ''}</td>
             <td style="width: 15%;text-align: center;">${x.clients.length}</td>
-            <td style="width: 15%;text-align: center;">${x.owner.name}</td>
+            <td style="width: 15%;text-align: center;">${x.owner?.name || ''}</td>
             <td style="width: 15%;text-align: center;">${x.product.name}</td>
             <td style="width: 15%;text-align: center;"><a href="${frontendUrl}/organisation-document?doc=${x._id}" target="blank" class="page-link">Click Here</a></td>
             <td style="width: 15%;text-align: center;">Freemium</td>
